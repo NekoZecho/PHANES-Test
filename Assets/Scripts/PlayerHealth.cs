@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-
 public class PlayerHealth : MonoBehaviour
 {
+
     [SerializeField]
     float health = 20;
     [SerializeField]
@@ -21,12 +21,31 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField]
     float regenAmount = 2f;
     float regenTimer;
-    // Start is called before the first frame update
+    [SerializeField]
+    Image adrenalRush;
+    [SerializeField]
+    Image adrenalineOverlay;
+    [SerializeField]
+    float adrenalRushCharges = 3f;
+    [SerializeField]
+    float adrenalRushCooldown = 5f;
+    [SerializeField]
+    float adrenalRushHealth = 10f;
+    [SerializeField]
+    float adrenalRushDuration = 8f;
+    float adrenalRushDTimer;
+    [SerializeField]
+    float adrenalRushTimeSpeed = 0.25f;
+    float adrenalRushCDTimer;
+    [SerializeField]
+    public bool adrenalRushActive = false;
+
 
     void Start()
     {
         maxHealth = health;
         healthBar.fillAmount = health / maxHealth;
+        adrenalineOverlay.GetComponent<Image>().enabled = false;
     }
 
     // Update is called once per frame
@@ -34,11 +53,18 @@ public class PlayerHealth : MonoBehaviour
     {
         healthTimer += Time.deltaTime;
         regenTimer += Time.deltaTime;
+        adrenalRushCDTimer += Time.deltaTime;
+        adrenalRushDTimer += Time.deltaTime;
+        
         if (regenTimer > regenSpeed)
         {
             regenTimer = 0;
             health += regenAmount;
             healthBar.fillAmount = health / maxHealth;
+        }
+        if (adrenalRushActive == true)
+        {
+            adrenalRushDTimer -= Time.deltaTime * 2f;
         }
     }
 
@@ -55,24 +81,15 @@ public class PlayerHealth : MonoBehaviour
             healthTimer = 0;
             //consequences for taking too much damage
             //IF we take enough damage to bring health to 0, reload level
-            if (health <= 0)
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown)
+            {
+                health = 1;
+                Time.timeScale = adrenalRushTimeSpeed;
+            }
+            else if (health <= 0 && adrenalRushCharges <= 0)
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 //SceneManager.LoadScene(levelToLoad);
-            }
-            else if (collision.gameObject.tag == "Enemy" && healthTimer > healthDrain)
-            {
-                //health = health - 1;
-                health -= 1;
-                healthBar.fillAmount = health / maxHealth;
-                healthTimer = 0;
-                //consequences for taking too much damage
-                //IF we take enough damage to bring health to 0, reload level
-                if (health <= 0)
-                {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                    //SceneManager.LoadScene(levelToLoad);
-                }
             }
         }
     }
@@ -84,7 +101,7 @@ public class PlayerHealth : MonoBehaviour
             health -= 1;
             healthBar.fillAmount = health / maxHealth;
             healthTimer = 0;
-            if (health <= 0)
+            if ((health <= 0 && adrenalRushCharges <= 0))
             {
                 SceneManager.LoadScene(levelToLoad);
                 //SceneManager.LoadScene(levelToLoad);
@@ -98,7 +115,7 @@ public class PlayerHealth : MonoBehaviour
         {
             health -= 5;
             healthBar.fillAmount = health / maxHealth;
-            if (health <= 0)
+            if (health <= 0 && adrenalRushCharges <= 0)
             {
                 SceneManager.LoadScene(levelToLoad);
                 //SceneManager.LoadScene(levelToLoad);
@@ -111,13 +128,24 @@ public class PlayerHealth : MonoBehaviour
         {
             health -= 1;
             healthBar.fillAmount = health / maxHealth;
-            if (health <= 0)
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown)
+            {
+                AdrenalRush();
+            }
+            else if (health <= 0 && adrenalRushCharges <= 0)
             {
                 SceneManager.LoadScene(levelToLoad);
-                //SceneManager.LoadScene(levelToLoad);
             }
         }
     }
 
+    public void AdrenalRush()
+    {
+        health = adrenalRushHealth;
+        Time.timeScale = 0.25f;
+        healthTimer = 0;
+        adrenalRushActive = true;
+
+    }
 
 }

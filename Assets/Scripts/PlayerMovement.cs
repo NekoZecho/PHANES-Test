@@ -11,6 +11,8 @@ public class PlayerMovement : MonoBehaviour
     float runSpeed = 15f;
     [SerializeField]
     float Stamina = 15f;
+    [SerializeField]
+    Image staminaWheel;
     float maxStamina;
     [SerializeField]
     float staminaRegen = 0.5f;
@@ -19,14 +21,18 @@ public class PlayerMovement : MonoBehaviour
     float staminaRegenTimer;
     [SerializeField]
     float catchBreath = 4f;
+    [SerializeField]
+    float catchBreathSpeed = 5f;
     float catchBreathTimer;
-    public bool isRunning;
+    public bool catchingBreath = false;
+    public bool isRunning = false;
     //[SerializeField]
     //float crouchSpeed = 5f;
 
     void Start()
     {
         maxStamina = Stamina;
+        staminaWheel.fillAmount = Stamina / maxStamina;
 
     }
 
@@ -37,17 +43,22 @@ public class PlayerMovement : MonoBehaviour
         float yInput = Input.GetAxis("Vertical");
 
         //Player Sprint
-        if (Input.GetKey(KeyCode.LeftShift) && Stamina >=0)
+        if (Input.GetKey(KeyCode.LeftShift) && Stamina >= 0)
         {
-            //Stamina functionality
-            Stamina -= Time.deltaTime;
             //set isRunning to true
             isRunning = true;
             GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * runSpeed;
+            if (GetComponent<Rigidbody2D>().velocity != new Vector2(0, 0))
+            {
+                //Stamina functionality
+                Stamina -= Time.deltaTime;
+                staminaWheel.fillAmount = Stamina / maxStamina;
+            }
+
         }
 
         //if not sprinting, or Stamina is depleted
-        else
+        else if (catchingBreath == false)
         {
             //set isRunning to false
             isRunning = false;
@@ -57,6 +68,7 @@ public class PlayerMovement : MonoBehaviour
             if (Stamina >= maxStamina)
             {
                 Stamina = maxStamina;
+                staminaWheel.fillAmount = Stamina / maxStamina;
                 staminaRegenTimer = 0;
                 catchBreathTimer = 0;
             }
@@ -74,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         staminaRegenTimer = 0;
                         Stamina += staminaRegen;
+                        staminaWheel.fillAmount = Stamina / maxStamina;
                     }
 
                     //if NOT time to regen Stamina yet
@@ -82,9 +95,14 @@ public class PlayerMovement : MonoBehaviour
                         staminaRegenTimer += Time.deltaTime;
                     }
                 }
+                else if (catchBreathTimer < catchBreath && Stamina <= 0)
+                {
+                    catchingBreath = true;
+                }
+
                 //if Stamina was not depleted, we do not need to catch our breath
                 //so regen without catchBreath cooldown
-                else if (Stamina > 0)
+                if (Stamina > 0)
                     {
                     staminaRegenTimer += Time.deltaTime;
                     //if time to regen, regen
@@ -92,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
                     {
                         staminaRegenTimer = 0;
                         Stamina += staminaRegen;
+                        staminaWheel.fillAmount = Stamina / maxStamina;
                     }
 
                     //if not time to regen, continue timer
@@ -109,8 +128,24 @@ public class PlayerMovement : MonoBehaviour
                 }
 
             }
+
             //walk
             GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * walkSpeed;
+
         }
+        else if (catchingBreath == true)
+        {
+            catchBreathTimer += Time.deltaTime;
+            GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * catchBreathSpeed;
+            if (catchBreathTimer > catchBreath)
+                {
+                catchingBreath = false;
+                catchBreathTimer = 0;
+                staminaRegenTimer = 0;
+                Stamina += staminaRegen;
+                staminaWheel.fillAmount = Stamina / maxStamina;
+            }
+            }
+
     }
 }
