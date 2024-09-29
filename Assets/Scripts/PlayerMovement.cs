@@ -42,110 +42,221 @@ public class PlayerMovement : MonoBehaviour
         float xInput = Input.GetAxis("Horizontal");
         float yInput = Input.GetAxis("Vertical");
 
-        //Player Sprint
-        if (Input.GetKey(KeyCode.LeftShift) && Stamina >= 0)
+        if (GetComponent<PlayerHealth>().adrenalRushActive == false)
         {
-            //set isRunning to true
-            isRunning = true;
-            GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * runSpeed;
-            if (GetComponent<Rigidbody2D>().velocity != new Vector2(0, 0))
+            //Player Sprint
+            if (Input.GetKey(KeyCode.LeftShift) && Stamina >= 0)
             {
-                //Stamina functionality
-                Stamina -= Time.deltaTime;
-                staminaWheel.fillAmount = Stamina / maxStamina;
+                //set isRunning to true
+                isRunning = true;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * runSpeed;
+                if (GetComponent<Rigidbody2D>().velocity != new Vector2(0, 0))
+                {
+                    //Stamina functionality
+                    Stamina -= Time.deltaTime;
+                    staminaWheel.fillAmount = Stamina / maxStamina;
+                }
+
             }
 
-        }
-
-        //if not sprinting, or Stamina is depleted
-        else if (catchingBreath == false)
-        {
-            //set isRunning to false
-            isRunning = false;
-
-            //make sure Stamina does not go above initial amount
-            //set timers to 0
-            if (Stamina >= maxStamina)
+            //if not sprinting, or Stamina is depleted
+            else if (catchingBreath == false)
             {
-                Stamina = maxStamina;
-                staminaWheel.fillAmount = Stamina / maxStamina;
-                staminaRegenTimer = 0;
-                catchBreathTimer = 0;
-            }
+                //set isRunning to false
+                isRunning = false;
 
-            //if Stanima needs to be regenerated
-            else
-            {
-                //checks if the player has used up all of their stamina
-                //and if the caughtBreath cooldown has elapsed
-                if (catchBreathTimer > catchBreath && Stamina <= 0)
+                //make sure Stamina does not go above initial amount
+                //set timers to 0
+                if (Stamina >= maxStamina)
                 {
-                    staminaRegenTimer += Time.deltaTime;
-                    //if time to regen Stamina
-                    if (staminaRegenTimer > staminaRegenSpeed)
-                    {
-                        staminaRegenTimer = 0;
-                        Stamina += staminaRegen;
-                        staminaWheel.fillAmount = Stamina / maxStamina;
-                    }
-
-                    //if NOT time to regen Stamina yet
-                    else
-                    {
-                        staminaRegenTimer += Time.deltaTime;
-                    }
-                }
-                else if (catchBreathTimer < catchBreath && Stamina <= 0)
-                {
-                    catchingBreath = true;
+                    Stamina = maxStamina;
+                    staminaWheel.fillAmount = Stamina / maxStamina;
+                    staminaRegenTimer = 0;
+                    catchBreathTimer = 0;
                 }
 
-                //if Stamina was not depleted, we do not need to catch our breath
-                //so regen without catchBreath cooldown
-                if (Stamina > 0)
-                    {
-                    staminaRegenTimer += Time.deltaTime;
-                    //if time to regen, regen
-                    if (staminaRegenTimer > staminaRegenSpeed)
-                    {
-                        staminaRegenTimer = 0;
-                        Stamina += staminaRegen;
-                        staminaWheel.fillAmount = Stamina / maxStamina;
-                    }
-
-                    //if not time to regen, continue timer
-                    else
-                    {
-                        staminaRegenTimer += Time.deltaTime;
-                    }
-
-                }
-
-                //if player hasn't rested long enough yet, continue timer
+                //if Stanima needs to be regenerated
                 else
                 {
-                    catchBreathTimer += Time.deltaTime;
+                    //checks if the player has used up all of their stamina
+                    //and if the caughtBreath cooldown has elapsed
+                    if (catchBreathTimer > catchBreath && Stamina <= 0)
+                    {
+                        staminaRegenTimer += Time.deltaTime;
+                        //if time to regen Stamina
+                        if (staminaRegenTimer > staminaRegenSpeed)
+                        {
+                            staminaRegenTimer = 0;
+                            Stamina += staminaRegen;
+                            staminaWheel.fillAmount = Stamina / maxStamina;
+                        }
+
+                        //if NOT time to regen Stamina yet
+                        else
+                        {
+                            staminaRegenTimer += Time.deltaTime;
+                        }
+                    }
+                    else if (catchBreathTimer < catchBreath && Stamina <= 0)
+                    {
+                        catchingBreath = true;
+                    }
+
+                    //if Stamina was not depleted, we do not need to catch our breath
+                    //so regen without catchBreath cooldown
+                    if (Stamina > 0)
+                    {
+                        staminaRegenTimer += Time.deltaTime;
+                        //if time to regen, regen
+                        if (staminaRegenTimer > staminaRegenSpeed)
+                        {
+                            staminaRegenTimer = 0;
+                            Stamina += staminaRegen;
+                            staminaWheel.fillAmount = Stamina / maxStamina;
+                        }
+
+                        //if not time to regen, continue timer
+                        else
+                        {
+                            staminaRegenTimer += Time.deltaTime;
+                        }
+
+                    }
+
+                    //if player hasn't rested long enough yet, continue timer
+                    else
+                    {
+                        catchBreathTimer += Time.deltaTime;
+                    }
+
+                }
+
+                //walk
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * walkSpeed;
+
+            }
+            else if (catchingBreath == true)
+            {
+                catchBreathTimer += Time.deltaTime;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * catchBreathSpeed;
+                if (catchBreathTimer > catchBreath)
+                {
+                    catchingBreath = false;
+                    catchBreathTimer = 0;
+                    staminaRegenTimer = 0;
+                    Stamina += staminaRegen;
+                    staminaWheel.fillAmount = Stamina / maxStamina;
+                }
+            }
+
+        }
+        else
+        {
+            //Player Sprint
+            if (Input.GetKey(KeyCode.LeftShift) && Stamina >= 0)
+            {
+                //set isRunning to true
+                isRunning = true;
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * runSpeed * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                if (GetComponent<Rigidbody2D>().velocity != new Vector2(0, 0))
+                {
+                    //Stamina functionality
+                    Stamina -= Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                    staminaWheel.fillAmount = Stamina / maxStamina;
                 }
 
             }
 
-            //walk
-            GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * walkSpeed;
+            //if not sprinting, or Stamina is depleted
+            else if (catchingBreath == false)
+            {
+                //set isRunning to false
+                isRunning = false;
 
-        }
-        else if (catchingBreath == true)
-        {
-            catchBreathTimer += Time.deltaTime;
-            GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * catchBreathSpeed;
-            if (catchBreathTimer > catchBreath)
+                //make sure Stamina does not go above initial amount
+                //set timers to 0
+                if (Stamina >= maxStamina)
                 {
-                catchingBreath = false;
-                catchBreathTimer = 0;
-                staminaRegenTimer = 0;
-                Stamina += staminaRegen;
-                staminaWheel.fillAmount = Stamina / maxStamina;
-            }
-            }
+                    Stamina = maxStamina;
+                    staminaWheel.fillAmount = Stamina / maxStamina;
+                    staminaRegenTimer = 0;
+                    catchBreathTimer = 0;
+                }
 
+                //if Stanima needs to be regenerated
+                else
+                {
+                    //checks if the player has used up all of their stamina
+                    //and if the caughtBreath cooldown has elapsed
+                    if (catchBreathTimer > catchBreath && Stamina <= 0)
+                    {
+                        staminaRegenTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                        //if time to regen Stamina
+                        if (staminaRegenTimer > staminaRegenSpeed)
+                        {
+                            staminaRegenTimer = 0;
+                            Stamina += staminaRegen;
+                            staminaWheel.fillAmount = Stamina / maxStamina;
+                        }
+
+                        //if NOT time to regen Stamina yet
+                        else
+                        {
+                            staminaRegenTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                        }
+                    }
+                    else if (catchBreathTimer < catchBreath && Stamina <= 0)
+                    {
+                        catchingBreath = true;
+                    }
+
+                    //if Stamina was not depleted, we do not need to catch our breath
+                    //so regen without catchBreath cooldown
+                    if (Stamina > 0)
+                    {
+                        staminaRegenTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                        //if time to regen, regen
+                        if (staminaRegenTimer > staminaRegenSpeed)
+                        {
+                            staminaRegenTimer = 0;
+                            Stamina += staminaRegen;
+                            staminaWheel.fillAmount = Stamina / maxStamina;
+                        }
+
+                        //if not time to regen, continue timer
+                        else
+                        {
+                            staminaRegenTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                        }
+
+                    }
+
+                    //if player hasn't rested long enough yet, continue timer
+                    else
+                    {
+                        catchBreathTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                    }
+
+                }
+
+                //walk
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * walkSpeed * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+
+            }
+            else if (catchingBreath == true)
+            {
+                catchBreathTimer += Time.deltaTime * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                GetComponent<Rigidbody2D>().velocity = new Vector2(xInput, yInput) * catchBreathSpeed * (0.5f / GetComponent<PlayerHealth>().adrenalRushTimeSpeed);
+                if (catchBreathTimer > catchBreath)
+                {
+                    catchingBreath = false;
+                    catchBreathTimer = 0;
+                    staminaRegenTimer = 0;
+                    Stamina += staminaRegen;
+                    staminaWheel.fillAmount = Stamina / maxStamina;
+                }
+            }
+        }
     }
+       
 }

@@ -26,7 +26,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField]
     Image adrenalineOverlay;
     [SerializeField]
-    float adrenalRushCharges = 3f;
+    float adrenalRushCharges = 2f;
+    float maxAdrenalCharges;
     [SerializeField]
     float adrenalRushCooldown = 5f;
     [SerializeField]
@@ -35,36 +36,50 @@ public class PlayerHealth : MonoBehaviour
     float adrenalRushDuration = 8f;
     float adrenalRushDTimer;
     [SerializeField]
-    float adrenalRushTimeSpeed = 0.25f;
+    public float adrenalRushTimeSpeed = 0.25f;
     float adrenalRushCDTimer;
     [SerializeField]
     public bool adrenalRushActive = false;
+    [SerializeField]
+    bool Invincible = false;
 
 
     void Start()
     {
         maxHealth = health;
+        maxAdrenalCharges = adrenalRushCharges;
         healthBar.fillAmount = health / maxHealth;
+        adrenalRush.fillAmount = adrenalRushCharges / maxAdrenalCharges;
         adrenalineOverlay.GetComponent<Image>().enabled = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        healthTimer += Time.deltaTime;
-        regenTimer += Time.deltaTime;
-        adrenalRushCDTimer += Time.deltaTime;
-        adrenalRushDTimer += Time.deltaTime;
+        if (adrenalRushActive == true)
+        {
+            adrenalRushDTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
+            healthTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
+            regenTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
+            adrenalRushCDTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
+            if (adrenalRushDTimer > adrenalRushDuration)
+            {
+                AdrenalRushDeactivate();
+            }
+            
+        }
+        else
+        {
+            regenTimer += Time.deltaTime;
+            adrenalRushCDTimer += Time.deltaTime;
+            adrenalRushDTimer += Time.deltaTime;
+        }
         
         if (regenTimer > regenSpeed)
         {
             regenTimer = 0;
             health += regenAmount;
             healthBar.fillAmount = health / maxHealth;
-        }
-        if (adrenalRushActive == true)
-        {
-            adrenalRushDTimer -= Time.deltaTime * 2f;
         }
     }
 
@@ -73,7 +88,7 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log(collision.gameObject.name);
         //We want to take damage IF the player hits the enemy capsule
         //bool key = true;
-        if (collision.gameObject.tag == "Enemy" && healthTimer > healthDrain)
+        if (collision.gameObject.tag == "Enemy" && healthTimer > healthDrain && Invincible == false)
         {
             //health = health - 1;
             health -= 1;
@@ -81,54 +96,59 @@ public class PlayerHealth : MonoBehaviour
             healthTimer = 0;
             //consequences for taking too much damage
             //IF we take enough damage to bring health to 0, reload level
-            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown)
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
             {
-                health = 1;
-                Time.timeScale = adrenalRushTimeSpeed;
+                AdrenalRush();
             }
             else if (health <= 0 && adrenalRushCharges <= 0)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-                //SceneManager.LoadScene(levelToLoad);
+                SceneManager.LoadScene(levelToLoad);
             }
         }
     }
 
     private void OnCollisionStay2D(Collision2D collision)
     {
-        if (collision.gameObject.tag == "Enemy" && healthTimer > healthDrain)
+        if (collision.gameObject.tag == "Enemy" && healthTimer > healthDrain && Invincible == false)
         {
             health -= 1;
             healthBar.fillAmount = health / maxHealth;
             healthTimer = 0;
-            if ((health <= 0 && adrenalRushCharges <= 0))
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
+            {
+                AdrenalRush();
+            }
+            else if (health <= 0 && adrenalRushCharges <= 0)
             {
                 SceneManager.LoadScene(levelToLoad);
-                //SceneManager.LoadScene(levelToLoad);
             }
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "EnemyBullet")
+        if (collision.gameObject.tag == "EnemyBullet" && Invincible == false)
         {
             health -= 5;
             healthBar.fillAmount = health / maxHealth;
-            if (health <= 0 && adrenalRushCharges <= 0)
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
+            {
+                AdrenalRush();
+            }
+            else if (health <= 0 && adrenalRushCharges <= 0 && adrenalRushCDTimer > adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
-                //SceneManager.LoadScene(levelToLoad);
             }
         }
     }
+
     void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Enemy")
+        if (collision.gameObject.tag == "Fire" && Invincible == false)
         {
             health -= 1;
             healthBar.fillAmount = health / maxHealth;
-            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown)
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
             {
                 AdrenalRush();
             }
@@ -141,11 +161,23 @@ public class PlayerHealth : MonoBehaviour
 
     public void AdrenalRush()
     {
-        health = adrenalRushHealth;
-        Time.timeScale = 0.25f;
-        healthTimer = 0;
         adrenalRushActive = true;
-
+        Invincible = true;
+        health = adrenalRushHealth;
+        adrenalRushDTimer = 0;
+        Time.timeScale = adrenalRushTimeSpeed;
+        healthTimer = 0;
+        adrenalineOverlay.GetComponent<Image>().enabled = true;
     }
 
+    public void AdrenalRushDeactivate()
+    {
+        adrenalRushActive = false;
+        Invincible = false;
+        Time.timeScale = 1;
+        adrenalineOverlay.GetComponent<Image>().enabled = false;
+        adrenalRushCharges -= 1;
+        adrenalRush.fillAmount = adrenalRushCharges / maxAdrenalCharges;
+
+    }
 }
