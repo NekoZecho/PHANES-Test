@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   chaseTriggerDistance: 10
-  bulletSpeed: 6.2
+  bulletSpeed: 6.1
 --- !u!114 &3726767216305404982
 MonoBehaviour:
   m_ObjectHideFlags: 0
