@@ -129,7 +129,20 @@ public class PlayerHealth : MonoBehaviour
     {
         if (collision.gameObject.tag == "EnemyBullet" && Invincible == false)
         {
-            health -= 5;
+            health -= 2;
+            healthBar.fillAmount = health / maxHealth;
+            if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
+            {
+                AdrenalRush();
+            }
+            else if (health <= 0 && adrenalRushCharges <= 0 && adrenalRushCDTimer > adrenalRushCooldown)
+            {
+                SceneManager.LoadScene(levelToLoad);
+            }
+        }
+        else if (collision.gameObject.tag == "HeatSeeker" && Invincible == false)
+        {
+            health -= 15;
             healthBar.fillAmount = health / maxHealth;
             if (health <= 0 && adrenalRushCharges >= 1 && adrenalRushCDTimer > adrenalRushCooldown && adrenalRushActive == false)
             {
