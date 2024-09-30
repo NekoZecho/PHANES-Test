@@ -106,8 +106,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 14b253423f5c5ee4285a6ced0d8a8455, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaseTriggerDistance: 10
-  bulletSpeed: 6.1
+  chaseTriggerDistance: 15
+  bulletSpeed: 6.2
 --- !u!114 &3726767216305404982
 MonoBehaviour:
   m_ObjectHideFlags: 0

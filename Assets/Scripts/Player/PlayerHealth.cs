@@ -61,7 +61,6 @@ public class PlayerHealth : MonoBehaviour
             adrenalRushDTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
             healthTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
             regenTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
-            adrenalRushCDTimer += Time.deltaTime * (1 / adrenalRushTimeSpeed);
             if (adrenalRushDTimer > adrenalRushDuration)
             {
                 AdrenalRushDeactivate();
@@ -100,7 +99,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 AdrenalRush();
             }
-            else if (health <= 0 && adrenalRushCharges <= 0)
+            else if (health <= 0 && adrenalRushCDTimer < adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
             }
@@ -118,7 +117,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 AdrenalRush();
             }
-            else if (health <= 0 && adrenalRushCharges <= 0)
+            else if (health <= 0 && adrenalRushCDTimer < adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
             }
@@ -135,7 +134,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 AdrenalRush();
             }
-            else if (health <= 0 && adrenalRushCharges <= 0 && adrenalRushCDTimer > adrenalRushCooldown)
+            else if (health <= 0 && adrenalRushCDTimer < adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
             }
@@ -148,7 +147,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 AdrenalRush();
             }
-            else if (health <= 0 && adrenalRushCharges <= 0 && adrenalRushCDTimer > adrenalRushCooldown)
+            else if (health <= 0 && adrenalRushCDTimer < adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
             }
@@ -165,7 +164,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 AdrenalRush();
             }
-            else if (health <= 0 && adrenalRushCharges <= 0)
+            else if (health <= 0 && adrenalRushCDTimer < adrenalRushCooldown)
             {
                 SceneManager.LoadScene(levelToLoad);
             }
@@ -191,6 +190,7 @@ public class PlayerHealth : MonoBehaviour
         adrenalineOverlay.GetComponent<Image>().enabled = false;
         adrenalRushCharges -= 1;
         adrenalRush.fillAmount = adrenalRushCharges / maxAdrenalCharges;
+        adrenalRushCDTimer = 0;
 
     }
 }

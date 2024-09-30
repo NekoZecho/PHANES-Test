@@ -60,6 +60,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Special Turret Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 7916498066941718421, guid: 4eaa5588d42f5ca4dbf53e83708d426e, type: 3}
+      propertyPath: m_Color.b
+      value: 0.26072446
+      objectReference: {fileID: 0}
+    - target: {fileID: 7916498066941718421, guid: 4eaa5588d42f5ca4dbf53e83708d426e, type: 3}
+      propertyPath: m_Color.g
+      value: 0.26072446
+      objectReference: {fileID: 0}
+    - target: {fileID: 7916498066941718421, guid: 4eaa5588d42f5ca4dbf53e83708d426e, type: 3}
+      propertyPath: m_Color.r
+      value: 0.8773585
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6258449877861390682, guid: 4eaa5588d42f5ca4dbf53e83708d426e, type: 3}
     m_RemovedGameObjects: []
@@ -90,4 +102,4 @@ MonoBehaviour:
   bulletSpeed: 6
   bulletDrop: 20
   fireRate: 10
-  shootRange: 15
+  shootRange: 20
