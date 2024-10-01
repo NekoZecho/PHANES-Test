@@ -9,7 +9,10 @@ public class NewBehaviourScript : MonoBehaviour
     {
         if (collision.gameObject.tag != "Player")
         {
-            Destroy(gameObject);
+            if (collision.gameObject.tag != "PlayerBullet")
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

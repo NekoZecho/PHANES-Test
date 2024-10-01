@@ -33,6 +33,7 @@ public class EnemyShoot : MonoBehaviour
             shootDir.Normalize();
             GameObject bullet = Instantiate(prefab, transform.position, Quaternion.identity);
             bullet.GetComponent<Rigidbody2D>().velocity = shootDir * bulletSpeed;
+            bullet.GetComponent<Rigidbody2D>().transform.up = shootDir;
             Destroy(bullet, bulletDrop);
         }
         

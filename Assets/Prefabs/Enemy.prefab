@@ -181,10 +181,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   prefab: {fileID: 802307501421240927, guid: b5ee6a8e1638e02448db2672a84d254e, type: 3}
-  bulletSpeed: 6.5
+  bulletSpeed: 8
   bulletDrop: 5
   fireRate: 0.5
-  shootRange: 5
+  shootRange: 20
 --- !u!61 &4170635737767520947
 BoxCollider2D:
   m_ObjectHideFlags: 0

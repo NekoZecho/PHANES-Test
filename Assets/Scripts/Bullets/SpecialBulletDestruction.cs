@@ -12,7 +12,10 @@ public class SpecialEnemyBulletDestruction : MonoBehaviour
             {
                 if (collision.gameObject.tag != "HeatSeeker")
                 {
-                    Destroy(gameObject);
+                    if (collision.gameObject.tag != "PlayerBullet")
+                    {
+                        Destroy(gameObject);
+                    }
                 }
             }
         }
