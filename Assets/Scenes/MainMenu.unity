@@ -342,7 +342,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f899ef3c7b48a144a0e17bf12eb82d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelToLoad: SampleScene
+  levelToLoad: CourtesyCall
 --- !u!1 &869950918
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,7 +627,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f899ef3c7b48a144a0e17bf12eb82d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelToLoad: 
+  levelToLoad: CourtesyCall
 --- !u!1 &2112406143
 GameObject:
   m_ObjectHideFlags: 0

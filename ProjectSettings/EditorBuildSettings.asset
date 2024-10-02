@@ -8,4 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/NextLevel.unity
+    guid: 7a7d36ca5e58efd4b90e94a3e1426211
+  - enabled: 1
+    path: Assets/Scenes/CourtesyCall.unity
+    guid: 45771607eb8cc284b9e39b79c29407db
+  - enabled: 1
+    path: Assets/Scenes/Win.unity
+    guid: 434cc122e1592404e8abc18c09c4a1c8
   m_configObjects: {}

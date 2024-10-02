@@ -210,7 +210,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 50
-  levelToLoad: SampleScene
+  levelToLoad: CourtesyCall
   healthBar: {fileID: 0}
   regenSpeed: 0.5
   regenAmount: 0.5
